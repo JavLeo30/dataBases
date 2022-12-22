@@ -4,14 +4,15 @@ import pandas as pd
 class Basededatos():
     
 #FUNCION PARA CREAR UNA BASE DE DATOS
-    def createDB(self,BaseDatos):
+    def createDB(BaseDatos):
         conn = sql.connect(BaseDatos)
         conn.commit()
         conn.close()
         return BaseDatos
 
 #FUNCION PARA CREAR UNA TABLA EN LA BASE DE DATOS
-    def create_Table(self,BaseDatos,table):
+    def create_Table(
+        BaseDatos,table):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"""CREATE TABLE IF NOT EXISTS {table}
@@ -23,7 +24,8 @@ class Basededatos():
         return table
 
 #FUNCION PARA INSERTAR UN NUEVO PRODUCTO Y SU PRECIO EN LA BASE DE DATOS
-    def insertRow(self,BaseDatos,table, producto, precio):
+    def insertRow(
+        BaseDatos,table, producto, precio):
         try:        
             conn = sql.connect(BaseDatos)
             cursor = conn.cursor()
@@ -45,7 +47,8 @@ class Basededatos():
 
             
 #FUNCION PARA ELIMINAR UNA TABLA EN LA PASE DE DATOS          
-    def delete_Table(self,BaseDatos,table):
+    def delete_Table(
+        BaseDatos,table):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"""DROP TABLE {table}  """)
@@ -55,7 +58,8 @@ class Basededatos():
 
 
 #FUNCION PARA ACTUALIZAR UN PRODUCTO EN LA BASE DE DATOS
-    def update(self, BaseDatos, table, precio, producto):
+    def update(
+         BaseDatos, table, precio, producto):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"UPDATE {table} SET precio = ? WHERE producto = ?", (precio, producto))
@@ -64,7 +68,8 @@ class Basededatos():
         
 
 #FUNCION PARA ELIMINAR TODA LA BASE DE DATOS
-    def delete_database(self,BaseDatos,basededatos):
+    def delete_database(
+        BaseDatos,basededatos):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"DROP DATABASE {basededatos}")
@@ -73,7 +78,7 @@ class Basededatos():
 
         
 #FUNCION PARA BUSCAR EL PRECIO DE UN PRODUCTO MEDIANTE SU NOMBRE EN LA BASE DE DATOS
-    def search_price(self, BaseDatos, table, producto):
+    def search_price( BaseDatos, table, producto):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"SELECT precio FROM {table} WHERE producto=?", (producto,))
@@ -83,7 +88,7 @@ class Basededatos():
 
 
 #FUNCION PARA BUSCAR UN PRODUCTO MEDIANDO EL ID DEL MISMO EN LA BASE DE DATOS
-    def search_by_id(self,BaseDatos,table, id):
+    def search_by_id(BaseDatos,table, id):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"SELECT * FROM {table} WHERE id=?", (id,))
@@ -92,7 +97,7 @@ class Basededatos():
         return id, nombre, precio
 
 #FUNCION PARA VER TODOS LOS PRODUCTOS EN LA BASE DE DATOS.
-    def view_all(self,BaseDatos,table):
+    def view_all(BaseDatos,table):
         conn = sql.connect(BaseDatos)
         consulta = f"SELECT * FROM {table}"
 
@@ -101,7 +106,7 @@ class Basededatos():
 
 
 #FUNCION PARA ELIMINAR UN PRODUCTOS DE LA TABLA DE PRODUCTOS
-    def delete_product(self, BaseDatos, table, producto):
+    def delete_product( BaseDatos, table, producto):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"DELETE FROM {table} WHERE producto=?", (producto,))
@@ -110,7 +115,7 @@ class Basededatos():
 
 
 #FUNCION PARA CREAR EL NOMBRE DE LA BASE DE DATOS
-    def nombredb(self,): 
+    def nombredb(): 
         nombre = input("Ingresa El Nombre de la Base de Datos  Crear: ")
         nombrebd = f"{nombre}.db"
         with open("nombredb.txt", "w") as f:
@@ -118,16 +123,17 @@ class Basededatos():
         return nombrebd
 #FUNCION PARA LLAMAR EL NOMBRE DE LA BASE DE DATOS
 
-    def ingresarNombreBD(self,):
+    def ingresarNombreBD():
         x = open("nombredb.txt")
         BaseDatos = x.read()
         return BaseDatos
 
 #FUNCION PARA CREAR EL NOMBRE DE LA TABLA
-    def nombreTable(self,):
+    def nombreTable():
         nombreTB = input("Ingresa Nombre de La Tabla a Crear: ")
         with open("nombreTB.txt", "w") as f:
             f.write(nombreTB)
+            return nombreTB
 
 #FUNCION PARA LLAMAR EL NOMBRE DE LA TABLA
     def ingresarNombreTB(self):
@@ -148,10 +154,10 @@ class Basededatos():
         with open("HistorialBD.txt", "w") as f:
             f.write(update_historial)
 
-
+# bd = Basededatos
 # BaseDatos = bd.nombredb()
 # bd.createDB(BaseDatos)
-# table = bd.ingresarNombreTB()
+#table = bd.ingresarNombreTB()
 
 
                                            #//Usado para la administracion del sistema
