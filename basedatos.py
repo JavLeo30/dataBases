@@ -1,5 +1,6 @@
 import sqlite3 as sql
 import pandas as pd
+from tabulate import tabulate
 
 class Basededatos():
     
@@ -16,7 +17,7 @@ class Basededatos():
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"""CREATE TABLE IF NOT EXISTS {table}
-                    (id INTEGER PRIMARY KEY AUTOINCREMENT DEFAULT 0,
+                    (ID INTEGER PRIMARY KEY AUTOINCREMENT DEFAULT 0,
                     Producto TEXT UNIQUE,
                     Precio REAL) """)       
         conn.commit()
@@ -24,17 +25,11 @@ class Basededatos():
         return table
 
 #FUNCION PARA INSERTAR UN NUEVO PRODUCTO Y SU PRECIO EN LA BASE DE DATOS
-    def insertRow(
-        BaseDatos,table, producto, precio):
+    def insertRow(BaseDatos,table, producto, precio):
         try:        
             conn = sql.connect(BaseDatos)
             cursor = conn.cursor()
-
-            # Asigna el valor a la variable 'insert_query' antes de utilizarla
-            insert_query = f"INSERT INTO {table} VALUES (null, ?, ?)"
-
-            # Ejecuta la consulta con placeholders
-            cursor.execute(insert_query, (producto, precio))
+            cursor.execute(f"INSERT INTO {table} VALUES (null, ?, ?)", (producto, precio))
 
             # Guarda los cambios en la base de datos
             conn.commit()
@@ -43,38 +38,41 @@ class Basededatos():
             cursor.close()
             conn.close()
         except:
-            print("El producto ya se encuentra registrado")   
+             print("El producto ya se encuentra registrado")   
 
             
 #FUNCION PARA ELIMINAR UNA TABLA EN LA PASE DE DATOS          
-    def delete_Table(
-        BaseDatos,table):
+    def delete_Table(BaseDatos,table):
         conn = sql.connect(BaseDatos)
         cursor = conn.cursor()
         cursor.execute(f"""DROP TABLE {table}  """)
         conn.commit()
         conn.close()
-        
+        print(f"Se a Eliminado la Tabla de Poructos:{table} Correctamente")
 
 
 #FUNCION PARA ACTUALIZAR UN PRODUCTO EN LA BASE DE DATOS
-    def update(
-         BaseDatos, table, precio, producto):
-        conn = sql.connect(BaseDatos)
-        cursor = conn.cursor()
-        cursor.execute(f"UPDATE {table} SET precio = ? WHERE producto = ?", (precio, producto))
-        conn.commit()
-        conn.close()
+    def update(BaseDatos, table, precio, producto):
+        try:
+            conn = sql.connect(BaseDatos)
+            cursor = conn.cursor()
+            cursor.execute(f"UPDATE {table} SET precio = ? WHERE producto = ?", (precio, producto))
+            conn.commit()
+            conn.close()
+        except:
+             print("El Producto No Existe en la Base de Datos")
         
 
 #FUNCION PARA ELIMINAR TODA LA BASE DE DATOS
-    def delete_database(
-        BaseDatos,basededatos):
-        conn = sql.connect(BaseDatos)
-        cursor = conn.cursor()
-        cursor.execute(f"DROP DATABASE {basededatos}")
-        conn.commit()
-        conn.close()
+    def delete_database():
+        pass
+        import os
+        if os.path.exists(bd.optener_ruta()):
+            # Elimina el archivo
+            os.remove(bd.optener_ruta())
+            print("Base de datos eliminada con éxito")
+        else:
+            print("No se ha encontrado el archivo de la base de datos")
 
         
 #FUNCION PARA BUSCAR EL PRECIO DE UN PRODUCTO MEDIANTE SU NOMBRE EN LA BASE DE DATOS
@@ -98,12 +96,20 @@ class Basededatos():
 
 #FUNCION PARA VER TODOS LOS PRODUCTOS EN LA BASE DE DATOS.
     def view_all(BaseDatos,table):
-        conn = sql.connect(BaseDatos)
-        consulta = f"SELECT * FROM {table}"
-
-        df = pd.read_sql(consulta, conn)
-        print(df)
-
+        try:
+            conn = sql.connect(BaseDatos)
+            consulta = f"SELECT * FROM {table}"
+            df = pd.read_sql(consulta, conn)
+            dft = tabulate(
+            df, headers=["ID","Nombre","Precio"],
+            tablefmt="grid",
+            showindex=False,
+            floatfmt='.2f',
+            stralign='center',
+            numalign='center')
+            print(dft)
+        except:
+             print("No se puede imprimir la lista porque no se encontro la tabla o no existe")
 
 #FUNCION PARA ELIMINAR UN PRODUCTOS DE LA TABLA DE PRODUCTOS
     def delete_product( BaseDatos, table, producto):
@@ -112,7 +118,7 @@ class Basededatos():
         cursor.execute(f"DELETE FROM {table} WHERE producto=?", (producto,))
         conn.commit()
         conn.close()
-
+        print("Producto eliminado")
 
 #FUNCION PARA CREAR EL NOMBRE DE LA BASE DE DATOS
     def nombredb(): 
@@ -133,16 +139,16 @@ class Basededatos():
         nombreTB = input("Ingresa Nombre de La Tabla a Crear: ")
         with open("nombreTB.txt", "w") as f:
             f.write(nombreTB)
-            return nombreTB
+        return nombreTB
 
 #FUNCION PARA LLAMAR EL NOMBRE DE LA TABLA
-    def ingresarNombreTB(self):
+    def ingresarNombreTB():
         x = open("nombreTB.txt")
         table = x.read()
         return table
 
 #FUNCION PARA ALMACENAR TODOS LOS NOMBRES DE LAS BASE DE DATOS CREADAS
-    def historialBD(self):
+    def historialBD():
         with open("nombredb.txt", "r") as f:
             NombreBD = f.read()
 
@@ -154,30 +160,13 @@ class Basededatos():
         with open("HistorialBD.txt", "w") as f:
             f.write(update_historial)
 
-# bd = Basededatos
-# BaseDatos = bd.nombredb()
-# bd.createDB(BaseDatos)
-#table = bd.ingresarNombreTB()
+#FUNCION QUE BUSCA LA RUTA DONDE ESTA GUARDADA LA BASE DE DATOS
+    def optener_ruta():
+        import os
+        BaseDatos = bd.ingresarNombreBD()
+        # Obtiene la ruta de acceso completa al archivo
+        file_ruta = os.path.abspath(BaseDatos)
+        return file_ruta
 
-
-                                           #//Usado para la administracion del sistema
-
-# bd.createTable(BaseDatos, table)                                 #//Usado para la administracion del sistema
-
-# bd.insertRow(BaseDatos,table,"pera", 1.235)                      #//Usado para la administracion del sistema
-
-# bd.delete_Table(BaseDatos,table)                                #//Usado para la administracion del sistema
-
-# bd.update(BaseDatos, table, 5, "pera")                         #//Usado para la administracion del sistema
-
-# bd.delete_database(BaseDatos)                                  #//Usado para la administracion del sistema
-
-# x = bd.search_price(BaseDatos, table, "pera")                  #//Usado para la caja de facturacion
-# print(x)
-
-# bd.view_all(BaseDatos,table)                                   #//Usado para la administracion del sistema  
-
-# data = [bd.search_by_id(BaseDatos,table,(1))]                  #//Usado para la caja de facturacion y admistracion del sistema
-# df = pd.DataFrame(data, columns=['ID', 'Nombre', 'Precio'])
-# print(df)
-
+#Intanciando la Clase
+bd = Basededatos
